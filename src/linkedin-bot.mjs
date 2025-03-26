@@ -184,9 +184,25 @@ async function promptForCredentials() {
 
 async function launchBrowser() {
   console.log('Launching browser');
+  // Determine Chrome path based on operating system
+  let executablePath;
+  switch (process.platform) {
+    case 'darwin': // macOS
+      executablePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+      break;
+    case 'win32': // Windows
+      executablePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+      break;
+    case 'linux': // Linux
+      executablePath = '/usr/bin/google-chrome';
+      break;
+    default:
+      executablePath = null; // Let Puppeteer find Chrome automatically
+  }
+
   const browser = await puppeteer.launch({ 
     headless: true,
-    executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    ...(executablePath && { executablePath }), // Only include if path is found
     args: [
       '--window-size=1280,800',
       '--disable-web-security',
